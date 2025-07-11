@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: #f7f9fc; /* Lighter background */
+            color: #333;
+            display: flex; /* Use flexbox for main layout */
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar Styles --- */
+        .sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .sidebar-profile {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .sidebar-profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6c5ce7; /* Purple border */
+            margin-bottom: 10px;
+        }
+
+        .sidebar-profile h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .sidebar-profile p {
+            margin: 5px 0 15px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .sidebar-profile .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar-profile .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%; /* Make list full width of sidebar */
+        }
+
+        .sidebar ul li {
+            width: 100%;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #555;
+            display: flex; /* Use flex for icon and text alignment */
+            align-items: center;
+            padding: 12px 30px; /* Left padding for icon space */
+            margin: 5px 0;
+            transition: background-color 0.2s ease, color 0.2s ease, border-left 0.2s ease;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative; /* For the active indicator */
+        }
+
+        .sidebar ul li a i {
+            margin-right: 15px; /* Space between icon and text */
+            font-size: 18px;
+            color: #777;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #f0f4f8;
+            color: #6c5ce7; /* Purple on hover */
+        }
+        .sidebar ul li a:hover i {
+            color: #6c5ce7;
+        }
+
+        .sidebar ul li a.active {
+            background-color: #e6e6fa; /* Lighter purple background for active */
+            color: #6c5ce7;
+            font-weight: 600;
+            border-left: 5px solid #6c5ce7; /* Active indicator */
+            padding-left: 25px; /* Adjust padding due to border */
+        }
+        .sidebar ul li a.active i {
+            color: #6c5ce7;
+        }
+
+        /* --- Main Content Styles --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: #f7f9fc;
+            overflow-y: auto; /* Enable scrolling for content */
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .date-display {
+            font-size: 18px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .date-display i {
+            font-size: 20px;
+            color: #6c5ce7;
+        }
+
+        /* --- Welcome Card --- */
+        .welcome-card {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); /* Purple gradient */
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden; /* For the background image */
+        }
+
+        .welcome-card-content h2 {
+            font-size: 32px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-card-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            max-width: 70%; /* Keep text from being too wide */
+        }
+
+        .welcome-card-content .view-appointments-btn {
+            background-color: #fff;
+            color: #6c5ce7; /* Purple text on white button */
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .welcome-card-content .view-appointments-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-card-image {
+            position: absolute;
+            right: 0px; /* Adjust position */
+            bottom: 0px; /* Adjust position */
+            width: 300px; /* Adjust size */
+            height: 200px; /* Adjust size */
+            background-image: url('https://i.imgur.com/your-medical-items-image.png'); /* Replace with actual image URL if you have one */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center right;
+            opacity: 0.8;
+        }
+        /* --- Status Grid --- */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-card .count {
+            font-size: 32px;
+            font-weight: 700;
+            color: #6c5ce7; /* Purple count */
+            margin-bottom: 5px;
+        }
+
+        .status-card .label {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .status-card .icon-wrapper {
+            background-color: #e6e6fa; /* Light purple */
+            padding: 10px;
+            border-radius: 8px;
+            align-self: flex-end; /* Align icon to bottom right */
+            margin-top: auto; /* Push to bottom */
+        }
+        .status-card .icon-wrapper i {
+            font-size: 20px;
+            color: #6c5ce7;
+        }
+
+        /* --- Upcoming Sessions Panel --- */
+        .panel {
+            background: #ffffff;
+            padding: 20px; /* Reduced padding */
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .panel h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px; /* Reduced margin */
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .upcoming-sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .upcoming-sessions-table th,
+        .upcoming-sessions-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .upcoming-sessions-table th {
+            background-color: #f0f4f8;
+            color: #555;
+            font-weight: 600;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        .upcoming-sessions-table tbody tr:hover {
+            background-color: #fdfefe;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-style: italic;
+            border: 1px dashed #e0e0e0;
+            border-radius: 10px;
+            margin-top: 20px;
+            background-color: #fcfcfc;
+        }
+        .no-data-message img {
+            width: 120px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+        .no-data-message p {
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        .no-data-message strong {
+            color: #6c5ce7;
+        }
+
+        /* --- General reusable styles from previous version (kept for other sections) --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes fadein {
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
+        @keyframes fadeout {
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: 0; opacity: 0; }
+        }
+
+        /* Other sections (Appointments, Slots, Messages, Profile) - hidden by default */
+        #appointmentSection, #setSlotsSection, #messagesSection, #profileSection, #videocallSection{
+            display: none;
+        }
+        #dashboardSection { display: block; } /* Ensure dashboard is visible by default */
+
+        /* Specific styles for Appointments section (from previous code, kept for functionality) */
+        .appointment {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .appointment:last-child { border-bottom: none; }
+        .appointment p { margin: 0; font-size: 16px; color: #333; }
+        .appointment small { color: #666; font-size: 14px; line-height: 1.4; }
+        .appointment-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .appointment-actions button {
+            padding: 8px 15px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .appointment-actions .accept-button { background-color: #2ecc71; color: white; }
+        .appointment-actions .accept-button:hover { background-color: #27ae60; transform: translateY(-1px); }
+        .appointment-actions .reject-button { background-color: #e74c3c; color: white; }
+        .appointment-actions .reject-button:hover { background-color: #c0392b; transform: translateY(-1px); }
+        #noAppointments {
+            text-align: center; padding: 40px; color: #777; font-style: italic; border: 1px dashed #e0e0e0;
+            border-radius: 8px; margin-top: 20px;
+        }
+
+        /* Styles for Messages section (from previous code, kept for functionality) */
+        #messagesSection {
+            display: flex; flex-direction: row; gap: 20px; min-height: 500px;
+        }
+        .patient-list-panel {
+            flex: 1; background: #ffffff; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); min-width: 250px; max-width: 350px;
+            display: flex; flex-direction: column;
+        }
+        .patient-list-panel h3 { margin-top: 0; margin-bottom: 15px; color: #2c3e50; font-weight: 600; font-size: 20px; }
+        .patient-list-panel ul { list-style: none; padding: 0; flex-grow: 1; overflow-y: auto; }
+        .patient-list-panel li {
+            padding: 12px 10px; border-bottom: 1px solid #eee; cursor: pointer; color: #34495e;
+            font-weight: 500; transition: background-color 0.2s ease, padding-left 0.2s ease;
+            border-radius: 6px; margin-bottom: 4px;
+        }
+        .patient-list-panel li:last-child { border-bottom: none; }
+        .patient-list-panel li:hover { background-color: #f0f8ff; padding-left: 15px; }
+        .patient-list-panel li.active-patient {
+            background-color: #e0f2f7; padding-left: 15px; border-left: 4px solid #3498db;
+            color: #2c3e50;
+        }
+        .chat-panel {
+            flex: 3; background: #ffffff; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column;
+        }
+        .chat-header {
+            font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #2c3e50;
+            border-bottom: 1px solid #eee; padding-bottom: 10px;
+        }
+        .message-display {
+            flex: 1; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px;
+            overflow-y: auto; margin-bottom: 15px; background-color: #fcfcfc; display: flex;
+            flex-direction: column; gap: 10px;
+        }
+        .message {
+            padding: 10px 15px; border-radius: 18px; max-width: 75%; word-wrap: break-word;
+            font-size: 15px; line-height: 1.4;
+        }
+        .message.sent { background-color: #6c5ce7; color: white; align-self: flex-end; margin-left: auto; }
+        .message.received { background-color: #ecf0f1; color: #333; align-self: flex-start; margin-right: auto; }
+        .message-input-area { display: flex; gap: 10px; }
+        .message-input-area input {
+            flex: 1; padding: 12px 20px; border: 1px solid #ccc; border-radius: 25px;
+            font-size: 16px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .message-input-area input:focus { border-color: #6c5ce7; box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15); }
+        .message-input-area button {
+            background-color: #6c5ce7; color: white; border: none; padding: 12px 25px;
+            border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .message-input-area button:hover { background-color: #5d4edb; transform: translateY(-1px); }
+        .message-input-area button:active { transform: translateY(0); }
+        .message-input-area button:disabled { background-color: #cccccc; cursor: not-allowed; }
+
+        /* Styles for the new calendar-based slot setting */
+        /* This new class will wrap the calendar and time slots */
+        .set-slots-inner-layout {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 15px; /* Reduced gap */
+            margin-top: 15px;
+            padding: 15px; /* Reduced padding */
+            border: 1px solid #e0e0e0;
+            border-radius: 10px; /* Slightly less rounded */
+            background-color: #fdfdfd;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03); /* Subtle shadow */
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Custom Calendar Styles */
+        .custom-calendar {
+            flex: 1 1 350px; /* Adjusted flex-basis for a smaller calendar */
+            background-color: #ffffff;
+            border: 1px solid #dcdcdc;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Reduced shadow */
+            border-radius: 10px; /* Slightly less rounded */
+            padding: 20px; /* Reduced padding */
+            box-sizing: border-box;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px; /* Reduced margin */
+        }
+
+        .calendar-header button {
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 10px 15px; /* Reduced padding */
+            border-radius: 8px; /* Slightly less rounded */
+            cursor: pointer;
+            font-size: 1.1em; /* Slightly smaller font */
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .calendar-header button:hover {
+            background-color: #5d4edb;
+            transform: translateY(-1px); /* Reduced lift */
+        }
+        .calendar-header button:active {
+            transform: translateY(0);
+        }
+
+        .calendar-header h4 {
+            margin: 0;
+            font-size: 1.4em; /* Reduced font size */
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .calendar-weekdays, .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+
+        .calendar-weekday {
+            font-weight: 600;
+            color: #6c5ce7;
+            padding: 10px 0; /* Reduced padding */
+            font-size: 1em; /* Reduced font size */
+        }
+
+        .calendar-day {
+            padding: 12px 0 30px; /* Reduced padding-bottom for the badge, and top/bottom for day number */
+            border-radius: 8px; /* More square-like with subtle rounding */
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            font-size: 0.95em; /* Slightly smaller font */
+            font-weight: 500;
+            margin: 4px; /* Reduced margin for better spacing between days */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 55px; /* Reduced min-width for smaller cells */
+            min-height: 55px; /* Reduced min-height for smaller cells */
+            box-sizing: border-box;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .calendar-day.empty {
+            background-color: transparent;
+            cursor: default;
+            min-height: 55px; /* Maintain height for empty cells */
+            border: none;
+        }
+
+        .calendar-day:not(.empty):hover {
+            background-color: #f0f4f8;
+            transform: translateY(-1px); /* Reduced lift */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03); /* Reduced shadow */
+        }
+
+        .calendar-day.current-month {
+            color: #333;
+        }
+
+        .calendar-day.selected-date-calendar {
+            background-color: #6c5ce7;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+            transform: translateY(-1px); /* Reduced lift */
+        }
+        .calendar-day.selected-date-calendar .slot-count-badge {
+            background-color: #4a3e8e;
+        }
+
+        .calendar-day.has-slots-calendar {
+            background-color: #e6e6fa;
+            border: 1px solid #cdc9ea;
+            color: #4a3e8e;
+            font-weight: bold;
+        }
+
+        .slot-count-badge {
+            font-size: 0.8em; /* Reduced font size for the badge */
+            background-color: #8a2be2;
+            color: white;
+            padding: 3px 8px; /* Reduced padding for the badge */
+            border-radius: 12px; /* Slightly less rounded */
+            margin-top: 6px; /* Reduced space between day number and badge */
+            display: block;
+            line-height: 1;
+            position: absolute;
+            bottom: 4px; /* Adjusted position */
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Reduced shadow */
+        }
+
+
+        .calendar-day.past-day {
+            color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            transform: none;
+            box-shadow: none;
+        }
+        .calendar-day.past-day .slot-count-badge {
+            background-color: #b0b0b0;
+        }
+
+        .time-slots-wrapper {
+            flex: 2 1 450px; /* Adjusted flex-basis to make it smaller */
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Reduced gap */
+            padding: 20px; /* Reduced padding */
+            border: 1px solid #e9e9e9;
+            border-radius: 10px; /* Slightly less rounded */
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Reduced shadow */
+        }
+
+        .time-slots-wrapper h3 {
+            margin-top: 0;
+            margin-bottom: 12px; /* Reduced margin */
+            color: #2c3e50;
+            font-size: 1.4em; /* Reduced font size */
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjusted minmax for smaller buttons */
+            gap: 10px; /* Reduced gap */
+            max-height: 350px; /* Reduced max-height */
+            overflow-y: auto;
+            padding-right: 5px; /* For scrollbar */
+        }
+
+        .time-slot-button {
+            background-color: #f0f4f8;
+            color: #555;
+            padding: 10px 15px; /* Reduced padding for smaller buttons */
+            border: 1px solid #dcdcdc;
+            border-radius: 8px; /* Slightly less rounded */
+            cursor: pointer;
+            font-size: 0.95em; /* Reduced font size */
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+        }
+
+        .time-slot-button:hover {
+            background-color: #e6e6fa;
+            border-color: #a29bfe;
+            transform: translateY(-1px); /* Reduced lift */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Reduced shadow */
+        }
+
+        .time-slot-button.selected {
+            background-color: #6c5ce7;
+            color: white;
+            border-color: #5d4edb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+            transform: translateY(0); /* No lift on selected */
+        }
+
+        .time-slot-button.selected:hover {
+            background-color: #5d4edb;
+            transform: translateY(-1px);
+        }
+
+        .time-slot-button.booked {
+            background-color: #f1c40f;
+            color: #333;
+            border-color: #e6b300;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .time-slot-button.booked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .save-slots-button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 14px 30px; /* Reduced padding */
+            border: none;
+            border-radius: 10px; /* Slightly less rounded */
+            font-size: 1em; /* Reduced font size */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            width: 100%;
+            margin-top: 20px; /* Reduced margin */
+        }
+        .save-slots-button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        .save-slots-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* Styles for "Your Set Slots" section (from previous code, now integrated into calendar logic) */
+        .slot-date-group {
+            background-color: #f8fbff; border: 1px solid #e0f2f7; border-radius: 10px;
+            padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+        .slot-date-group-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+            font-size: 1.3em; color: #2c3e50; font-weight: bold; padding-bottom: 10px;
+            border-bottom: 1px solid #eef2f5;
+        }
+        .slot-date-group-header .icon { font-size: 1.8em; color: #6c5ce7; }
+        .slot-list { display: flex; flex-wrap: wrap; gap: 12px; padding: 0; list-style: none; }
+        .slot-item {
+            background-color: #e6e6fa; /* Light purple for slots */
+            color: #4a3e8e; /* Darker purple text */
+            padding: 10px 16px; border-radius: 25px; display: flex; align-items: center;
+            gap: 8px; font-size: 1em; font-weight: 500; border: 1px solid #cdc9ea;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
+        }
+        .slot-item:hover { background-color: #cdc9ea; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); }
+        .slot-delete-btn {
+            background: none; border: none; color: #e74c3c; font-weight: bold;
+            font-size: 1.2em; cursor: pointer; padding: 0 4px; line-height: 1;
+            opacity: 0.8; transition: opacity 0.2s ease, color 0.2s ease;
+        }
+        .slot-delete-btn:hover { opacity: 1; color: #c0392b; transform: scale(1.1); }
+        .no-slots-message {
+            text-align: center; color: #777; padding: 40px; border: 1px dashed #ccc;
+            border-radius: 12px; margin-top: 20px; background-color: #fdfdfd;
+            font-style: italic; font-size: 1.1em; line-height: 1.6;
+        }
+        .no-slots-message strong { color: #6c5ce7; }
+
+
+        /* Profile Section (from previous code, kept for functionality) */
+        .profile-panel {
+            display: flex; flex-direction: column; align-items: center; gap: 25px;
+            padding: 35px; text-align: center; background-color: #ffffff;
+            border-radius: 15px; box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            max-width: 700px; margin: 0 auto;
+        }
+        .profile-img-container {
+            position: relative; width: 160px; height: 160px; border-radius: 50%;
+            overflow: hidden; border: 5px solid #6c5ce7; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            display: flex; justify-content: center; align-items: center; background-color: #f0f0f0;
+        }
+        .profile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .profile-img-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center;
+            align-items: center; opacity: 0; transition: opacity 0.3s ease; cursor: pointer;
+        }
+        .profile-img-container:hover .profile-img-overlay { opacity: 1; }
+        
+        /* Hidden file input for profile pic upload */
+        .profile-img-container input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .profile-img-overlay span { color: white; font-size: 1.1em; font-weight: 500; pointer-events: none; }
+
+        .profile-info { width: 100%; max-width: 550px; text-align: center; }
+        .profile-info h2 {
+            color: #2c3e50; margin-bottom: 20px; font-size: 2.4em; font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .info-item {
+            background-color: #f9f9f9; border: 1px solid #e8e8e8; border-radius: 10px;
+            padding: 15px 20px; margin-bottom: 12px; display: flex; flex-direction: column;
+            align-items: flex-start; gap: 5px; transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .info-item:hover { background-color: #f2f2f2; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .info-item strong {
+            color: #34495e; font-size: 0.95em; min-width: 90px; font-weight: 600;
+        }
+        .info-item span { flex-grow: 1; color: #555; font-size: 1.1em; word-break: break-word; }
+        
+        /* Styles for editable fields */
+        .editable-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .editable-field .display-value {
+            flex-grow: 1;
+            color: #555;
+            font-size: 1.1em;
+            word-break: break-word;
+        }
+        .editable-field input[type="text"],
+        .editable-field input[type="email"],
+        .editable-field input[type="tel"],
+        .editable-field textarea {
+            width: 100%; /* Important for inputs inside flex */
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+            display: none; /* Hidden by default */
+        }
+        .editable-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .editable-field input[type="text"]:focus,
+        .editable-field input[type="email"]:focus,
+        .editable-field input[type="tel"]:focus,
+        .editable-field textarea:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .edit-profile-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .edit-profile-actions button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .edit-profile-actions .save-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+        }
+        .edit-profile-actions .save-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .edit-profile-actions .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+        .edit-profile-actions .cancel-btn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .edit-profile-actions .edit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        .edit-profile-actions .edit-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0;
+                padding: 15px 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            }
+            .sidebar-profile { margin-bottom: 20px; }
+            .sidebar ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+            .sidebar ul li a {
+                padding: 8px 15px; border-left: none; border-radius: 6px; margin: 0;
+            }
+            .sidebar ul li a.active {
+                border-left: none; border-bottom: 3px solid #6c5ce7; padding-left: 15px;
+                border-radius: 0;
+            }
+            .sidebar ul li a i { margin-right: 8px; }
+            .main-content { padding: 20px; }
+            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .welcome-card { flex-direction: column; align-items: flex-start; text-align: left; }
+            .welcome-card-image-placeholder { position: relative; width: 100%; height: 150px; right: auto; top: auto; transform: none; margin-top: 20px; }
+            .welcome-card-content p { max-width: 100%; }
+            .status-grid { grid-template-columns: 1fr; }
+            #messagesSection { flex-direction: column; }
+            .patient-list-panel, .chat-panel { min-width: unset; width: 100%; }
+            .set-slots-inner-layout { flex-direction: column; align-items: center; padding: 15px; }
+            .time-slots-wrapper { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header h1 { font-size: 24px; }
+            .date-display { font-size: 16px; }
+            .welcome-card-content h2 { font-size: 28px; }
+            .panel { padding: 20px; }
+            .profile-panel { padding: 20px; }
+            .upcoming-sessions-table th, .upcoming-sessions-table td {
+                padding: 10px; font-size: 14px;
+            }
+        }
+
+        .camera{
+            height: 720px;
+            width: 1250px;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-profile">
+            <img id="sidebarProfilePic" src="https://via.placeholder.com/80?text=Doctor" alt="Doctor Profile">
+            <h3 id="sidebarDoctorName"></h3>
+            <p id="sidebarDoctorEmail"></p>
+            <button class="logout-btn" onclick="logout()">Log out</button>
+        </div>
+        <ul id="mainMenu">
+            <li><a href="#" onclick="showSection('dashboardSection', this)" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="#" onclick="showSection('appointmentSection', this)"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+            <li><a href="#" onclick="showSection('setSlotsSection', this)"><i class="fas fa-clock"></i> Set Slots</a></li>
+            <li><a href="#" onclick="showSection('messagesSection', this)"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="#" onclick="showSection('videocallSection', this)"><i class="fas fa-video"></i> Teleconsultation</a></li>
+            <li><a href="#" onclick="showSection('profileSection', this)"><i class="fas fa-user"></i> Profile</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <section id="dashboardSection">
+            <div class="dashboard-header">
+                <h1 id="welcomeGreeting">Welcome Back, Dr. [Doctor Name]!</h1>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+
+            <div class="welcome-card">
+                <div class="welcome-card-content">
+                    <h2>Hello, <span id="welcomeDoctorName">Dr. [Doctor Name]</span></h2>
+                    <p>
+                        You have <strong id="pendingAppointmentsCount">0</strong> pending appointments and
+                        <strong id="upcomingSessionsCount">0</strong> upcoming sessions today.
+                        Stay organized and provide the best care!
+                    </p>
+                    <button class="view-appointments-btn" onclick="showSection('appointmentSection', document.querySelector('#mainMenu li a[onclick*=\'appointmentSection\']'))">
+                        View Appointments
+                    </button>
+                </div>
+                <div class="welcome-card-image-placeholder">
+                    </div>
+            </div>
+
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="count" id="totalAppointmentsCount">0</div>
+                    <div class="label">Total Appointments</div>
+                    <div class="icon-wrapper"><i class="fas fa-calendar-alt"></i></div>
+                </div>
+                <div class="status-card">
+                    <div class="count" id="patientsTodayCount">0</div>
+                    <div class="label">Patients Today</div>
+                    <div class="icon-wrapper"><i class="fas fa-user-injured"></i></div>
+                </div>
+                <div class="status-card">
+                    <div class="count" id="activePatientsCount">0</div>
+                    <div class="label">Active Patients</div>
+                    <div class="icon-wrapper"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="status-card">
+                    <div class="count" id="messagesCount">0</div>
+                    <div class="label">New Messages</div>
+                    <div class="icon-wrapper"><i class="fas fa-envelope"></i></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Upcoming Sessions</h2>
+                <table class="upcoming-sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="upcomingSessionsTableBody">
+                        </tbody>
+                </table>
+                <div id="noUpcomingSessions" class="no-data-message" style="display: none;">
+                    <img src="https://i.imgur.com/gK9qf6U.png" alt="No data" />
+                    <p>No <strong>upcoming sessions</strong> found for today!</p>
+                    <p>Why not <a href="#" onclick="showSection('setSlotsSection', document.querySelector('#mainMenu li a[onclick*=\'setSlotsSection\']'))"><strong>set some available slots</strong></a> for your patients?</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="appointmentSection">
+            <div class="panel">
+                <h2>Pending Appointments</h2>
+                <div id="appointmentsList">
+                    </div>
+                <div id="noAppointments" style="display: none;">
+                    <p>No pending appointments for now. Great work!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="setSlotsSection">
+            <div class="panel">
+                <h2>Set Your Available Slots</h2>
+                <!-- New inner layout container -->
+                <div class="set-slots-inner-layout">
+                    <!-- Custom Calendar UI -->
+                    <div id="customCalendar" class="custom-calendar">
+                        <div class="calendar-header">
+                            <button id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button>
+                            <h4 id="currentMonthYear"></h4>
+                            <button id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <span>Sun</span>
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+                        </div>
+                        <div id="calendarDaysGrid" class="calendar-days">
+                            <!-- Days will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="time-slots-wrapper">
+                        <h3 id="selectedDateHeader">Select a date to view/set slots</h3>
+                        <div class="time-slots-grid" id="timeSlotsGrid">
+                            </div>
+                        <button class="save-slots-button" onclick="saveAvailability()">Save Availability</button>
+                    </div>
+                </div>
+
+                <div id="noSlotsMessage" class="no-data-message" style="display: none;">
+                    <img src="https://i.imgur.com/gK9qf6U.png" alt="No Slots" />
+                    <p>You haven't set any <strong>appointment slots</strong> yet.</p>
+                    <p>Select a date and click on time slots to make yourself available!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="messagesSection">
+            <div class="patient-list-panel">
+                <h3>Patients</h3>
+                <ul id="patientList">
+                    </ul>
+            </div>
+            <div class="chat-panel">
+                <div id="chatHeader" class="chat-header">Select a patient to chat</div>
+                <div id="messageDisplay" class="message-display">
+                    </div>
+                <div class="message-input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message..." disabled />
+                    <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="profileSection">
+            <div class="profile-panel">
+                <div class="profile-img-container">
+                    <img id="profileImage" class="profile-img" src="https://via.placeholder.com/150" alt="Profile Picture" />
+                    <div class="profile-img-overlay" onclick="document.getElementById('profilePicUpload').click()">
+                        <span>Change Photo</span>
+                    </div>
+                    <input type="file" id="profilePicUpload" accept="image/*" />
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileDoctorName">Dr. [Doctor Name]</h2>
+
+                    <div class="info-item">
+                        <strong>Username:</strong>
+                        <div class="editable-field">
+                            <span id="profileUsernameDisplay" class="display-value"></span>
+                            <input type="text" id="profileUsernameInput" class="edit-input" />
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <strong>Specialist:</strong>
+                        <div class="editable-field">
+                            <span id="profileSpecialistDisplay" class="display-value"></span>
+                            <input type="text" id="profileSpecialistInput" class="edit-input" />
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <strong>Email:</strong>
+                        <div class="editable-field">
+                            <span id="profileEmailDisplay" class="display-value"></span>
+                            <input type="email" id="profileEmailInput" class="edit-input" />
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <strong>Phone:</strong>
+                        <div class="editable-field">
+                            <span id="profilePhoneDisplay" class="display-value"></span>
+                            <input type="tel" id="profilePhoneInput" class="edit-input" />
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <strong>Bio:</strong>
+                        <div class="editable-field">
+                            <span id="profileBioDisplay" class="display-value"></span>
+                            <textarea id="profileBioInput" class="edit-input"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="edit-profile-actions">
+                        <button class="edit-btn" id="editProfileBtn" onclick="toggleEditMode(true)">Edit Profile</button>
+                        <button class="save-btn" id="saveProfileBtn" style="display: none;" onclick="saveProfile()">Save Changes</button>
+                        <button class="cancel-btn" id="cancelEditBtn" style="display: none;" onclick="toggleEditMode(false)">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="messagesSection">
+            <div class="patient-list-panel">
+                <h3>Patients</h3>
+                <ul id="patientList">
+                    </ul>
+            </div>
+            <div class="chat-panel">
+                <div id="chatHeader" class="chat-header">Select a patient to chat</div>
+                <div id="messageDisplay" class="message-display">
+                    </div>
+                <div class="message-input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message..." disabled />
+                    <button id="sendMessageBtn" onclick="sendMessage()" disabled>Send</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="videocallSection">
+            <div class="date-display">
+       <iframe
+  class="camera"src="https://f27c8f626a1b.ngrok-free.app"
+  frameborder="0"
+  allow="camera; microphone; autoplay"
+></iframe>
+
+    </div>
+        </section> 
+
+    </main>
+
+    <div id="toastMessage" class="toast" style="display: none;"></div>
+
+    <script>
+        let currentUser = null; // To store the logged-in user's data
+        let selectedDateForSlots = null; // To keep track of the date selected in the calendar
+
+        // Custom Calendar Variables
+        let currentMonth, currentYear;
+
+        // Function to check login status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                // Ensure the user is a doctor, otherwise create a default doctor user
+                if (currentUser.role !== 'doctor') {
+                    currentUser = {
+                        username: "dr.default",
+                        fullName: "Dr. Default",
+                        email: "default@example.com",
+                        specialist: "General Practitioner",
+                        phone: "123-456-7890",
+                        bio: "A dedicated healthcare professional.",
+                        role: "doctor"
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            } else {
+                // If no user is logged in, create a default doctor user
+                currentUser = {
+                    username: "dr.default",
+                    fullName: "Dr. Default",
+                    email: "default@example.com",
+                    specialist: "General Practitioner",
+                    phone: "123-456-7890",
+                    bio: "A dedicated healthcare professional.",
+                    role: "doctor"
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+
+            updateDoctorInfo();
+
+            // Load doctor's slots specific to the current user
+            loadDoctorSlots();
+
+            // Initialize custom calendar
+            const today = new Date();
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+            renderCalendar();
+
+            // Add event listeners for calendar navigation
+            document.getElementById('prevMonthBtn').addEventListener('click', showPreviousMonth);
+            document.getElementById('nextMonthBtn').addEventListener('click', showNextMonth);
+
+
+            // Display current date in dashboard header
+            document.getElementById('currentDate').innerText = today.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Initially show the dashboard
+            showSection('dashboardSection', document.querySelector('#mainMenu li a[onclick*=\'dashboardSection\']'));
+
+            // Initial render of dynamic content
+            renderAppointments();
+            renderPatientList();
+            updateDashboardCounts();
+            renderSetSlots(); // This function will now only manage the noSlotsMessage visibility
+        });
+
+        function updateDoctorInfo() {
+            if (currentUser) {
+                document.getElementById('sidebarDoctorName').innerText = currentUser.fullName || "Dr. Unknown";
+                document.getElementById('sidebarDoctorEmail').innerText = currentUser.email || "N/A";
+                document.getElementById('welcomeGreeting').innerText = `Welcome Back, ${currentUser.fullName || "Doctor"}!`;
+                document.getElementById('welcomeDoctorName').innerText = currentUser.fullName || "Doctor";
+
+                // Populate Profile Section
+                document.getElementById('profileDoctorName').innerText = currentUser.fullName || "Dr. Unknown";
+                document.getElementById('profileUsernameDisplay').innerText = currentUser.username || "N/A";
+                document.getElementById('profileUsernameInput').value = currentUser.username || "";
+                document.getElementById('profileSpecialistDisplay').innerText = currentUser.specialist || "N/A";
+                document.getElementById('profileSpecialistInput').value = currentUser.specialist || "";
+                document.getElementById('profileEmailDisplay').innerText = currentUser.email || "N/A";
+                document.getElementById('profileEmailInput').value = currentUser.email || "";
+                document.getElementById('profilePhoneDisplay').innerText = currentUser.phone || "N/A";
+                document.getElementById('profilePhoneInput').value = currentUser.phone || "";
+                document.getElementById('profileBioDisplay').innerText = currentUser.bio || "No bio provided.";
+                document.getElementById('profileBioInput').value = currentUser.bio || "";
+            }
+        }
+
+        function logout() {
+            setTimeout(() => {
+             window.location.href = 'index.html';
+            }, 1000);
+        
+        }
+
+        function showSection(sectionId, clickedElement) {
+            // Hide all sections
+            document.querySelectorAll('main section').forEach(section => {
+                section.style.display = 'none';
+            });
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active class in sidebar
+            document.querySelectorAll('.sidebar ul li a').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+
+            // If navigating to Set Slots, ensure the calendar is rendered and slots are reset
+            if (sectionId === 'setSlotsSection') {
+                renderCalendar(); // Re-render calendar to update highlights
+                // Automatically select today's date and render its slots if nothing is selected
+                if (!selectedDateForSlots) {
+                    const today = new Date();
+                    const todayDateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    selectedDateForSlots = todayDateStr;
+                    // Find and click the corresponding day element to trigger selection and slot rendering
+                    // This will be handled by renderCalendar and selectDateInCalendar
+                }
+                renderTimeSlotsForDate(selectedDateForSlots); // Render slots for the selected date
+                document.getElementById('selectedDateHeader').innerText = `Slots for ${new Date(selectedDateForSlots).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`;
+                renderSetSlots(); // This will now just manage the noSlotsMessage visibility
+            }
+        }
+
+        // --- Profile Edit Functionality ---
+        function toggleEditMode(enable) {
+            const displayElements = document.querySelectorAll('.editable-field .display-value');
+            const inputElements = document.querySelectorAll('.editable-field .edit-input');
+
+            document.getElementById('editProfileBtn').style.display = enable ? 'none' : 'block';
+            document.getElementById('saveProfileBtn').style.display = enable ? 'block' : 'none';
+            document.getElementById('cancelEditBtn').style.display = enable ? 'block' : 'none';
+
+            displayElements.forEach(el => el.style.display = enable ? 'none' : 'block');
+            inputElements.forEach(el => el.style.display = enable ? 'block' : 'none');
+
+            // If disabling edit mode, revert inputs to current user data
+            if (!enable) {
+                updateDoctorInfo(); // Re-populate with current data
+            }
+        }
+
+        function saveProfile() {
+            if (!currentUser) return;
+
+            // Update currentUser object with new values from input fields
+            currentUser.username = document.getElementById('profileUsernameInput').value;
+            currentUser.specialist = document.getElementById('profileSpecialistInput').value;
+            currentUser.email = document.getElementById('profileEmailInput').value;
+            currentUser.phone = document.getElementById('profilePhoneInput').value;
+            currentUser.bio = document.getElementById('profileBioInput').value;
+
+            // In a real application, you would send this updated data to your backend server
+            // For this simulation, we just update localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateDoctorInfo(); // Update displayed info
+            toggleEditMode(false); // Exit edit mode
+            showToast('Profile updated successfully!', 'success');
+        }
+
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastMessage');
+            toast.innerText = message;
+            toast.style.backgroundColor = type === 'success' ? '#2ecc71' : '#e74c3c'; // Green for success, red for error
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Placeholder for profile picture upload (requires backend for actual storage)
+        document.getElementById('profilePicUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    document.getElementById('sidebarProfilePic').src = e.target.result;
+                    // In a real application: Upload this file to your server and save the URL in currentUser
+                    showToast('Profile picture updated (local preview only)!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function loadDoctorSlots() {
+            if (currentUser && currentUser.username) {
+                const storedSlots = localStorage.getItem(`doctorSlots_${currentUser.username}`);
+                if (storedSlots) {
+                    setSlots = JSON.parse(storedSlots);
+                } else {
+                    setSlots = []; // No stored slots for this doctor
+                }
+            }
+        }
+
+        function saveDoctorSlots() {
+            if (currentUser && currentUser.username) {
+                localStorage.setItem(`doctorSlots_${currentUser.username}`, JSON.stringify(setSlots));
+            }
+        }
+
+        
+        let currentPatient = null; // Track currently selected patient for chat
+
+        function renderAppointments() {
+            const appointmentsList = document.getElementById("appointmentsList");
+            appointmentsList.innerHTML = "";
+            const pendingAppointments = appointments.filter(
+                (app) => app.status === "pending"
+            );
+
+            if (pendingAppointments.length === 0) {
+                document.getElementById("noAppointments").style.display = "block";
+                document.getElementById("pendingAppointmentsCount").innerText = "0";
+            } else {
+                document.getElementById("noAppointments").style.display = "none";
+                document.getElementById("pendingAppointmentsCount").innerText = pendingAppointments.length;
+                pendingAppointments.forEach((app) => {
+                    const appointmentDiv = document.createElement("div");
+                    appointmentDiv.classList.add("appointment");
+                    appointmentDiv.innerHTML = `
+                        <p><strong>Patient:</strong> ${app.patientName}</p>
+                        <p><strong>Date:</strong> ${app.date} at ${app.time}</p>
+                        <small><strong>Reason:</strong> ${app.reason}</small>
+                        <div class="appointment-actions">
+                            <button class="accept-button" onclick="handleAppointment('${app.id}', 'accepted')">Accept</button>
+                            <button class="reject-button" onclick="handleAppointment('${app.id}', 'rejected')">Reject</button>
+                        </div>
+                    `;
+                    appointmentsList.appendChild(appointmentDiv);
+                });
+            }
+        }
+
+        function handleAppointment(id, status) {
+            const index = appointments.findIndex((app) => app.id == id);
+            if (index !== -1) {
+                appointments[index].status = status;
+                renderAppointments();
+                updateDashboardCounts();
+                showToast(`Appointment ${status}!`, status === 'accepted' ? 'success' : 'error');
+            }
+        }
+
+        function updateDashboardCounts() {
+            document.getElementById("totalAppointmentsCount").innerText = appointments.length;
+            const today = new Date().toISOString().slice(0, 10);
+            const appointmentsToday = appointments.filter(app => app.date === today && app.status === 'accepted');
+            document.getElementById("patientsTodayCount").innerText = appointmentsToday.length;
+            // Dummy new messages count
+            document.getElementById("messagesCount").innerText = Object.keys(patientMessages).length;
+
+            renderUpcomingSessions();
+        }
+
+        function renderUpcomingSessions() {
+            const tableBody = document.getElementById('upcomingSessionsTableBody');
+            tableBody.innerHTML = '';
+            const today = new Date().toISOString().slice(0, 10);
+            const upcoming = appointments.filter(app => app.date === today && app.status === 'accepted');
+
+            if (upcoming.length === 0) {
+                document.getElementById('noUpcomingSessions').style.display = 'block';
+                document.getElementById('upcomingSessionsTableBody').style.display = 'none';
+            } else {
+                document.getElementById('noUpcomingSessions').style.display = 'none';
+                document.getElementById('upcomingSessionsTableBody').style.display = 'table-row-group';
+                upcoming.forEach(session => {
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${session.patientName}</td>
+                        <td>${session.time}</td>
+                        <td><span style="color: green;">${session.status}</span></td>
+                        <td><button onclick="startCall('${session.patientName}')">Start Call</button></td>
+                    `;
+                });
+            }
+            document.getElementById("upcomingSessionsCount").innerText = upcoming.length;
+        }
+
+        // --- CUSTOM CALENDAR FUNCTIONS ---
+        function renderCalendar() {
+            const calendarDaysGrid = document.getElementById('calendarDaysGrid');
+            calendarDaysGrid.innerHTML = ''; // Clear previous days
+
+            const monthYearHeader = document.getElementById('currentMonthYear');
+            monthYearHeader.innerText = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // 0 for Sunday, 1 for Monday, etc.
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Last day of current month
+
+            const today = new Date();
+            const todayDateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            // Add empty divs for days before the first day of the month
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.classList.add('calendar-day', 'empty');
+                calendarDaysGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day', 'current-month');
+                
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                dayElement.dataset.date = dateStr;
+
+                // Check if the day is in the past
+                if (new Date(dateStr) < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                    dayElement.classList.add('past-day');
+                } else {
+                    dayElement.addEventListener('click', () => selectDateInCalendar(dateStr, dayElement));
+                }
+
+                // Highlight if it's the currently selected date
+                if (selectedDateForSlots === dateStr) {
+                    dayElement.classList.add('selected-date-calendar');
+                }
+
+                // Count slots for this day
+                const slotsForThisDay = setSlots.filter(slot => slot.date === dateStr);
+                
+                // Create a container for the day number and badge
+                const dayContent = document.createElement('div');
+                dayContent.style.textAlign = 'center';
+                dayContent.style.width = '100%';
+                dayContent.style.display = 'flex';
+                dayContent.style.flexDirection = 'column';
+                dayContent.style.alignItems = 'center';
+                dayContent.style.justifyContent = 'center';
+                dayContent.style.height = '100%'; // Make sure content fills the day element
+
+                const dayNumberSpan = document.createElement('span');
+                dayNumberSpan.innerText = day;
+                dayNumberSpan.style.fontWeight = 'bold';
+                dayNumberSpan.style.fontSize = '1.4em'; /* Adjusted font size for day number */
+                dayContent.appendChild(dayNumberSpan);
+
+
+                if (slotsForThisDay.length > 0) {
+                    dayElement.classList.add('has-slots-calendar'); // Keep the background highlight
+                    const slotCountBadge = document.createElement('span');
+                    slotCountBadge.classList.add('slot-count-badge');
+                    slotCountBadge.innerText = `${slotsForThisDay.length} slots`;
+                    dayContent.appendChild(slotCountBadge); // Append the badge to the content div
+                }
+
+                dayElement.appendChild(dayContent); // Append the content div to the day element
+                calendarDaysGrid.appendChild(dayElement);
+            }
+        }
+
+        function showPreviousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        function showNextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        function selectDateInCalendar(dateStr, clickedElement) {
+            // Remove 'selected-date-calendar' from previously selected day
+            const previouslySelected = document.querySelector('.calendar-day.selected-date-calendar');
+            if (previouslySelected) {
+                previouslySelected.classList.remove('selected-date-calendar');
+            }
+
+            // Add 'selected-date-calendar' to the newly selected day
+            clickedElement.classList.add('selected-date-calendar');
+
+            selectedDateForSlots = dateStr;
+            renderTimeSlotsForDate(dateStr);
+            document.getElementById('selectedDateHeader').innerText = `Slots for ${new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`;
+        }
+
+
+        // --- SLOT MANAGEMENT FUNCTIONS ---
+        let currentSelectedDateSlots = []; // Temporary array for slots of the currently selected date
+
+        function renderTimeSlotsForDate(dateStr) {
+            const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+            timeSlotsGrid.innerHTML = ''; // Clear previous slots
+
+            // Filter existing slots for the selected date
+            currentSelectedDateSlots = setSlots.filter(slot => slot.date === dateStr);
+
+            // Get current date and time for past slot checks
+            const now = new Date();
+            const todayStr = now.toISOString().slice(0, 10);
+
+            // Generate common time slots (e.g., every hour from 8 AM to 4 PM, excluding 5-6 PM)
+            const startHour = 8;
+            const endHour = 17; // Now ends at 5 PM to exclude 5:00 - 6:00 PM slot
+            const intervalMinutes = 60; // Changed to 60 for hourly slots
+
+            for (let h = startHour; h < endHour; h++) {
+                const slotStartTime24h = `${String(h).padStart(2, '0')}:00`;
+                const slotEndTime24h = `${String(h + 1).padStart(2, '0')}:00`; // End time is 1 hour after start
+
+                // Skip the 5:00 PM - 6:00 PM slot explicitly
+                if (h === 17) { // 17:00 is 5 PM, so this condition skips the slot starting at 5 PM
+                    continue;
+                }
+
+                const slotDateTime = new Date(`${dateStr}T${slotStartTime24h}:00`);
+
+                const isPast = (dateStr === todayStr && slotDateTime < now);
+                const isSelected = currentSelectedDateSlots.some(slot => slot.time === slotStartTime24h); // Check against start time
+                // In a real app, you'd also check if a slot is 'booked' by a patient
+                const isBooked = appointments.some(app => app.date === dateStr && app.time === formatTimeRangeAMPM(slotStartTime24h, slotEndTime24h) && app.status === 'accepted'); // Check against formatted range
+
+                const slotButton = document.createElement('button');
+                slotButton.classList.add('time-slot-button');
+                slotButton.innerText = formatTimeRangeAMPM(slotStartTime24h, slotEndTime24h); // Display as range
+                slotButton.dataset.date = dateStr;
+                slotButton.dataset.time = slotStartTime24h; // Store start time as the key for the slot
+
+                if (isPast) {
+                    slotButton.disabled = true;
+                    slotButton.style.opacity = 0.5;
+                    slotButton.style.cursor = 'not-allowed';
+                } else if (isBooked) {
+                    slotButton.classList.add('booked');
+                    slotButton.disabled = true;
+                } else if (isSelected) {
+                    slotButton.classList.add('selected');
+                }
+
+                if (!isPast && !isBooked) {
+                    slotButton.onclick = () => toggleSlotAvailability(dateStr, slotStartTime24h, slotButton);
+                }
+
+                timeSlotsGrid.appendChild(slotButton);
+            }
+
+            // Show/hide no slots message based on currentSelectedDateSlots (for this view)
+            if (currentSelectedDateSlots.length === 0 && timeSlotsGrid.children.length === 0) {
+                 document.getElementById('noSlotsMessage').style.display = 'block';
+            } else {
+                 document.getElementById('noSlotsMessage').style.display = 'none';
+            }
+        }
+
+        function toggleSlotAvailability(date, time, buttonElement) {
+            const existingIndex = setSlots.findIndex(slot => slot.date === date && slot.time === time);
+            const timeRange = formatTimeRangeAMPM(time, `${String(parseInt(time.split(':')[0]) + 1).padStart(2, '0')}:00`);
+
+            if (existingIndex !== -1) {
+                // Slot exists, remove it (unselect)
+                setSlots.splice(existingIndex, 1);
+                buttonElement.classList.remove('selected');
+                showToast(`Slot ${timeRange} on ${date} removed.`, 'success');
+            } else {
+                // Slot does not exist, add it (select)
+                setSlots.push({
+                    id: Date.now() + Math.random(), // Simple unique ID
+                    date: date,
+                    time: time // Store start time as the key
+                });
+                buttonElement.classList.add('selected');
+                showToast(`Slot ${timeRange} on ${date} added.`, 'success');
+            }
+            // Update calendar highlights after changing slots
+            renderCalendar();
+        }
+
+        function saveAvailability() {
+            saveDoctorSlots(); // Save the current state of setSlots to localStorage
+            showToast('Your availability has been saved!', 'success');
+            // Re-render calendar to ensure highlights are up-to-date
+            renderCalendar();
+        }
+
+        // Helper function to format HH:MM to HH:MM AM/PM for a single time
+        function formatSingleTimeAMPM(time24h) {
+            const [hours, minutes] = time24h.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; // Convert 0 to 12 for AM/PM
+            return `${formattedHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+        }
+
+        // New helper function to format time range (e.g., "8:00 - 9:00 AM")
+        function formatTimeRangeAMPM(startTime24h, endTime24h) {
+            const startFormatted = formatSingleTimeAMPM(startTime24h);
+            const endFormatted = formatSingleTimeAMPM(endTime24h);
+
+            // Extract AM/PM from start and end times
+            const startAmpm = startFormatted.split(' ')[1];
+            const endAmpm = endFormatted.split(' ')[1];
+
+            // If AM/PM is the same, only show it once at the end
+            if (startAmpm === endAmpm) {
+                return `${startFormatted.replace(` ${startAmpm}`, '')} - ${endFormatted}`;
+            } else {
+                return `${startFormatted} - ${endFormatted}`;
+            }
+        }
+
+
+        // The renderSetSlots function now primarily updates the calendar's highlights
+        function renderSetSlots() {
+            // This function now only manages the noSlotsMessage visibility
+            if (setSlots.length === 0) {
+                document.getElementById('noSlotsMessage').style.display = 'block';
+            } else {
+                document.getElementById('noSlotsMessage').style.display = 'none';
+            }
+            renderCalendar(); // Ensure calendar highlights are updated
+        }
+
+
+        function renderPatientList() {
+            const patientListUl = document.getElementById("patientList");
+            patientListUl.innerHTML = "";
+            for (const patientName in patientMessages) {
+                const li = document.createElement("li");
+                li.innerText = patientName;
+                li.onclick = () => selectPatient(patientName);
+                patientListUl.appendChild(li);
+            }
+        }
+
+        function selectPatient(patientName) {
+            currentPatient = patientName;
+            document.getElementById("chatHeader").innerText = `Chat with ${patientName}`;
+            document.getElementById("messageInput").disabled = false;
+            document.getElementById("sendMessageBtn").disabled = false;
+
+            // Remove active class from all and add to selected
+            document.querySelectorAll('#patientList li').forEach(li => li.classList.remove('active-patient'));
+            Array.from(document.querySelectorAll('#patientList li')).find(li => li.innerText === patientName).classList.add('active-patient');
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const messageDisplay = document.getElementById("messageDisplay");
+            messageDisplay.innerHTML = "";
+            if (currentPatient && patientMessages[currentPatient]) {
+                patientMessages[currentPatient].forEach((msg) => {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.classList.add("message");
+                    msgDiv.classList.add(msg.sender === "Doctor" ? "sent" : "received");
+                    msgDiv.innerText = msg.text.replace("[Doctor Name]", currentUser.fullName); // Replace placeholder
+                    messageDisplay.appendChild(msgDiv);
+                });
+                messageDisplay.scrollTop = messageDisplay.scrollHeight; // Scroll to bottom
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const text = messageInput.value.trim();
+            if (text && currentPatient) {
+                patientMessages[currentPatient].push({
+                    sender: "Doctor",
+                    text: text
+                });
+                renderMessages();
+                messageInput.value = "";
+                showToast("Message sent!", "success");
+            }
+        }
+    </script>
+</body>
+</html>

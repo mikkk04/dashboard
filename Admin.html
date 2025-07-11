@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* General Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5; /* Light gray background */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f7f9fc;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .admin-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            color: #fff;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid #007bff; /* Blue border */
+        }
+
+        .admin-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .admin-info h3 {
+            margin: 5px 0 0;
+            color: #333;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .admin-info p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c; /* Red for logout */
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 25px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            color: #555;
+            text-decoration: none;
+            font-size: 1.05em;
+            transition: background-color 0.2s, color 0.2s, border-left 0.2s;
+            border-left: 5px solid transparent; /* For active indicator */
+            font-weight: 500;
+        }
+
+        .sidebar-menu a i {
+            margin-right: 15px;
+            font-size: 1.2em;
+            color: #777;
+            transition: color 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #e9f5ff;
+            color: #007bff;
+            border-left-color: #007bff;
+        }
+
+        .sidebar-menu a:hover i {
+            color: #007bff;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #e9f5ff;
+            color: #007bff;
+            border-left-color: #007bff;
+            font-weight: 600;
+        }
+
+        .sidebar-menu a.active i {
+            color: #007bff;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background-color: #f7f9fc;
+            overflow-y: auto;
+        }
+
+        /* Header Bar within Main Content */
+        .main-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #ffffff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            max-width: 500px;
+            margin-right: 20px;
+        }
+
+        .search-bar input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: #007bff;
+        }
+
+        .search-bar button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .date-display {
+            font-size: 1em;
+            color: #777;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .date-display i {
+            color: #007bff;
+            font-size: 1.1em;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 1.8em;
+            color: #222;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .section-title i {
+            color: #007bff;
+            font-size: 1.1em;
+        }
+
+        /* Status Cards */
+        .status-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-card .icon-bg {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 3em;
+            color: rgba(0, 123, 255, 0.1);
+            z-index: 0;
+        }
+
+        .status-card h4 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            color: #222;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .status-card p {
+            font-size: 1.1em;
+            color: #555;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        /* Table Styles */
+        .data-section {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .data-section h3 {
+            font-size: 1.5em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling for tables on small screens */
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .styled-table thead th {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            text-align: left;
+            color: #555;
+            border-bottom: 2px solid #eee;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+        }
+
+        .styled-table tbody td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+            font-size: 0.9em;
+        }
+
+        .styled-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        .no-records {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .table-illustration {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-illustration img {
+            max-width: 180px;
+            height: auto;
+            opacity: 0.7;
+        }
+
+        .view-all-btn {
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .view-all-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* Form Styles (for Create Doctor, Broadcast) */
+        .form-panel {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-panel h3 {
+            font-size: 1.5em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #007bff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-action-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .form-action-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* Specific styles for User Management Actions */
+        .action-buttons button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-right: 5px;
+        }
+
+        .action-buttons .status-select {
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+        }
+
+        .action-buttons .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        .action-buttons .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 220px;
+                padding: 15px 0;
+            }
+            .sidebar-menu a {
+                padding: 12px 20px;
+                font-size: 0.95em;
+            }
+            .sidebar-menu a i {
+                margin-right: 10px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .main-header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            .search-bar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            .date-display {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .status-cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 15px;
+            }
+            .status-card h4 {
+                font-size: 2em;
+            }
+            .status-card p {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                box-shadow: none;
+                border-bottom: 1px solid #eee;
+            }
+            .sidebar-menu ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .sidebar-menu li {
+                width: auto;
+            }
+            .sidebar-menu a {
+                padding: 1000px 15px;
+                font-size: 0.9em;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            .sidebar-menu a.active {
+                border-left: none;
+                border-bottom: 3px solid #007bff;
+            }
+            .sidebar-menu a i {
+                display: none; /* Hide icons on small screens for compact menu */
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .section-title {
+                font-size: 1.5em;
+            }
+            .status-cards-container {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+            }
+            .table-illustration img {
+                max-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-avatar">
+                    <img src="https://via.placeholder.com/100/007bff/FFFFFF?text=AD" alt="Admin Avatar">
+                </div>
+                <div class="admin-info">
+                    <h3>Administrator</h3>
+                    <p>admin@edoc.com</p>
+                </div>
+                <button class="logout-btn" onclick="logout()">Log out</button>
+            </div>
+
+            <nav class="sidebar-menu">
+                <ul id="mainMenu">
+                    <li><a href="#" onclick="showSection('dashboardSection', this)" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="#" onclick="showSection('doctorsManagementSection', this)"><i class="fas fa-user-md"></i> Doctors</a></li>
+                    <li><a href="#" onclick="showSection('scheduleManagementSection', this)"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
+                    <li><a href="#" onclick="showSection('appointmentManagementSection', this)"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                    <li><a href="#" onclick="showSection('patientManagementSection', this)"><i class="fas fa-user-injured"></i> Patients</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="main-header-bar">
+                <div class="search-bar">
+                    <input type="text" id="searchBarInput" placeholder="Search Doctor name or Email">
+                    <button onclick="performSearch()"><i class="fas fa-search"></i> Search</button>
+                </div>
+                <div class="date-display">
+                    Today's Date <i class="far fa-calendar-alt"></i> <span id="todayDate"></span>
+                </div>
+            </div>
+
+            <section id="dashboardSection" class="active-section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> Status Overview</h2>
+                <div class="status-cards-container">
+                    <div class="status-card">
+                        <i class="fas fa-user-md icon-bg"></i>
+                        <h4 id="totalDoctorsCount">0</h4>
+                        <p>Doctors</p>
+                    </div>
+                    <div class="status-card">
+                        <i class="fas fa-user-injured icon-bg"></i>
+                        <h4 id="totalPatientsCount">0</h4>
+                        <p>Patients</p>
+                    </div>
+                    <div class="status-card">
+                        <i class="fas fa-book-medical icon-bg"></i>
+                        <h4 id="newBookingsCount">0</h4>
+                        <p>New Booking</p>
+                    </div>
+                    <div class="status-card">
+                        <i class="fas fa-hourglass-half icon-bg"></i>
+                        <h4 id="todaySessionsCount">0</h4>
+                        <p>Today Sessions</p>
+                    </div>
+                </div>
+
+
+                
+                <div class="data-section">
+                    <h3>Upcoming Appointments until Next Friday</h3>
+                    <div class="table-container">
+                        <table class="styled-table" id="upcomingAppointmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Appointment number</th>
+                                    <th>Patient name</th>
+                                    <th>Doctor</th>
+                                    <th>Session</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="table-illustration">
+                        <img src="https://placehold.co/180x120/E0F2F7/007BFF?text=Appointments" alt="Appointments Illustration">
+                    </div>
+                    <button class="view-all-btn" onclick="showSection('appointmentManagementSection', document.querySelector('[onclick*=\'appointmentManagementSection\']'))">Show all Appointments</button>
+                </div>
+
+                <div class="data-section">
+                    <h3>Upcoming Sessions until Next Friday</h3>
+                    <div class="table-container">
+                        <table class="styled-table" id="upcomingSessionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Session Title</th>
+                                    <th>Doctor</th>
+                                    <th>Scheduled Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="table-illustration">
+                        <img src="https://placehold.co/180x120/E0F7E0/28A745?text=Sessions" alt="Sessions Illustration">
+                    </div>
+                    <button class="view-all-btn" onclick="showSection('scheduleManagementSection', document.querySelector('[onclick*=\'scheduleManagementSection\']'))">Show all Sessions</button>
+                </div>
+            </section>
+
+            <section id="doctorsManagementSection" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-user-md"></i> Doctors Management</h2>
+
+                <div class="form-panel">
+                    <h3>Create New Doctor Account</h3>
+                    <div class="form-group">
+                        <label for="doctorName">Doctor's Name:</label>
+                        <input type="text" id="doctorName" placeholder="e.g., Dr. John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="doctorUsername">Username:</label>
+                        <input type="text" id="doctorUsername" placeholder="e.g., johndoe">
+                    </div>
+                    <div class="form-group">
+                        <label for="doctorPassword">Password:</label>
+                        <input type="text" id="doctorPassword" placeholder="Set a temporary password">
+                    </div>
+                    <div class="form-group">
+                        <label for="doctorSpecialty">Specialty:</label>
+                        <select id="doctorSpecialty">
+                            <option value="">-- Select Specialty --</option>
+                            <option value="Cardiologist">Cardiologist</option>
+                            <option value="Dermatologist">Dermatologist</option>
+                            <option value="Gastroenterologist">Gastroenterologist</option>
+                            <option value="Neurologist">Neurologist</option>
+                            <option value="Endocrinologist">Endocrinologist</option>
+                            <option value="Oncologist">Oncologist</option>
+                            <option value="Anesthesiologist">Anesthesiologist</option>
+                            <option value="Family medicine">Family medicine</option>
+                            <option value="Obstetrics and gynaecology">Obstetrics and gynaecology</option>
+                            <option value="Emergency medicine">Emergency medicine</option>
+                            <option value="General Surgery">General Surgery</option>
+                            <option value="Hematologist">Hematologist</option>
+                            <option value="Immunology">Immunology</option>
+                            <option value="Internal medicine">Internal medicine</option>
+                            <option value="Nephrologist">Nephrologist</option>
+                            <option value="Ophthalmologist">Ophthalmologist</option>
+                            <option value="Orthopaedist">Orthopaedist</option>
+                            <option value="Psychiatrist">Psychiatrist</option>
+                            <option value="Allergist">Allergist</option>
+                            <option value="Colorectal surgery">Colorectal surgery</option>
+                            <option value="Geriatrics">Geriatrics</option>
+                            <option value="Pediatrician">Pediatrician</option>
+                            <option value="Rheumatologist">Rheumatologist</option>
+                            <option value="Hospice and palliative medicine">Hospice and palliative medicine</option>
+                        </select>
+                    </div>
+                    <button class="form-action-btn" onclick="createDoctorAccount()">Create Doctor Account</button>
+                </div>
+
+                <div class="data-section">
+                    <div class="table-container">
+                        <table class="styled-table" id="allDoctorsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Specialty</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="scheduleManagementSection" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Schedule Management</h2>
+                <div class="data-section">
+                    <h3>Doctor Schedules</h3>
+                    <p class="no-records">Schedule management features will be implemented here.</p>
+                </div>
+            </section>
+
+            <section id="appointmentManagementSection" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-calendar-check"></i> Appointment Management</h2>
+                <div class="data-section">
+                    <h3>All Appointments</h3>
+                    <div class="table-container">
+                        <table class="styled-table" id="allAppointmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Appointment ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Doctor Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="patientManagementSection" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-user-injured"></i> Patient Management</h2>
+                <div class="data-section">
+                    <h3>All Patients</h3>
+                    <p class="no-records">Patient management features will be implemented here.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let doctors = [];
+        let patients = []; 
+        let appointments = [];
+
+        // Function to update the date display
+        function updateDateDisplay() {
+            const today = new Date();
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', options);
+        }
+
+        // Function to update dashboard overview counts
+        function updateDashboardOverview() {
+            document.getElementById('totalDoctorsCount').textContent = doctors.length;
+            document.getElementById('totalPatientsCount').textContent = patients.length;
+        }
+
+        // Function to render upcoming appointments for dashboard
+        function renderUpcomingAppointmentsDashboard() {
+            const tableBody = document.querySelector("#upcomingAppointmentsTable tbody");
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            const now = new Date();
+            const nextFriday = new Date(now);
+            nextFriday.setDate(now.getDate() + (5 + 7 - now.getDay()) % 7); // Calculate next Friday
+
+            const upcoming = appointments.filter(app => {
+                const appDate = new Date(app.date);
+                return appDate >= now && appDate <= nextFriday && (app.status === 'pending' || app.status === 'accepted');
+            }).sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+            if (upcoming.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="no-records">No upcoming appointments until next Friday.</td></tr>';
+                return;
+            }
+
+            upcoming.forEach(app => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${app.id}</td>
+                    <td>${app.patientName}</td>
+                    <td>${app.doctorName}</td>
+                    <td>${app.date} ${app.time}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to render upcoming sessions for dashboard (similar to appointments for now)
+        function renderUpcomingSessionsDashboard() {
+            const tableBody = document.querySelector("#upcomingSessionsTable tbody");
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            const now = new Date();
+            const nextFriday = new Date(now);
+            nextFriday.setDate(now.getDate() + (5 + 7 - now.getDay()) % 7);
+
+            const upcomingSessions = appointments.filter(app => {
+                const appDate = new Date(app.date);
+                return appDate >= now && appDate <= nextFriday && (app.status === 'pending' || app.status === 'accepted');
+            }).sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+            if (upcomingSessions.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" class="no-records">No upcoming sessions until next Friday.</td></tr>';
+                return;
+            }
+
+            upcomingSessions.forEach(app => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${app.id} - ${app.patientName}</td>
+                    <td>${app.doctorName}</td>
+                    <td>${app.date} ${app.time}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to display toast messages (replacing alert)
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            toast.textContent = message;
+            if (type === 'error') {
+                toast.style.backgroundColor = '#e74c3c';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#f39c12';
+            } else {
+                toast.style.backgroundColor = '#2ecc71';
+            }
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Function to switch sections
+        function showSection(sectionId, clickedElement) {
+            document.querySelectorAll('section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+
+            document.querySelectorAll('.sidebar-menu a').forEach(item => {
+                item.classList.remove('active');
+            });
+            clickedElement.classList.add('active');
+
+            // Re-render specific sections when they become active
+            if (sectionId === 'doctorsManagementSection') {
+                renderAllDoctorsTable();
+            } else if (sectionId === 'appointmentManagementSection') {
+                renderAllAppointmentsTable();
+            }
+            // Add other section rendering calls here if needed
+        }
+
+        // User Management (Doctors) Functions
+        function renderAllDoctorsTable() {
+            const tableBody = document.querySelector("#allDoctorsTable tbody");
+            tableBody.innerHTML = '';
+
+            if (doctors.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="no-records">No doctor accounts found.</td></tr>';
+                return;
+            }
+
+            doctors.forEach(doctor => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${doctor.name}</td>
+                    <td>${doctor.username}</td>
+                    <td>${doctor.specialty || 'N/A'}</td>
+                    <td>
+                        <select class="status-select" title="Status for ${doctor.username}" onchange="updateStatus(this, '${doctor.id}')">
+                            <option value="approved" ${doctor.status === 'approved' ? 'selected' : ''}>Approved</option>
+                            <option value="suspended" ${doctor.status === 'suspended' ? 'selected' : ''}>Suspended</option>
+                        </select>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="delete-btn" onclick="deleteUser('${doctor.id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+       async function createDoctorAccount() {
+            const name = document.getElementById("doctorName").value.trim();
+            const username = document.getElementById("doctorUsername").value.trim();
+            const password = document.getElementById("doctorPassword").value.trim();
+            const specialty = document.getElementById("doctorSpecialty").value;
+
+              fetch("php/createDoctor.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, username, password, specialty })
+            })
+            
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Doctor created successfully!");
+                    fetchDoctors(); // <-- this ensures updated list shows
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+
+    if (!name || !username || !password || !specialty) {
+        showToast("Please fill in all fields.", "error");
+        return;
+    }
+
+    const payload = { name, username, password, specialty };
+
+    try {
+        const res = await fetch("http://localhost:8080/doctor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`HTTP ${res.status}:`, errorText);
+            throw new Error(`Failed to create doctor: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        if (result.success) {
+            showToast(`✅ Doctor "${name}" account created successfully!`, "success");
+
+            const newDoctor = {
+                id: result.id || Math.random().toString(36).substr(2, 9),
+                name,
+                username,
+                password,
+                specialty,
+                status: "approved"
+            };
+
+            doctors.push(newDoctor);           // Add to in-memory list
+            appendDoctorToTable(newDoctor);    // ✅ Add row to table immediately
+
+            updateDashboardOverview?.();
+
+            // Clear form fields
+            document.getElementById("doctorName").value = '';
+            document.getElementById("doctorUsername").value = '';
+            document.getElementById("doctorPassword").value = '';
+            document.getElementById("doctorSpecialty").value = '';
+
+            // Show Doctors Management section (optional)
+            showSection('doctorsManagementSection', document.querySelector('[onclick*=doctorsManagementSection]'));
+        } else {
+            showToast(result.message || "Doctor creation failed.", "error");
+        }
+    } catch (err) {
+        console.error("❌ Error:", err);
+        showToast("Server error while creating doctor.", "error");
+    }
+}
+
+
+function appendDoctorToTable(doctor) {
+    const table = document.getElementById("allDoctorsTable").querySelector("tbody");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${doctor.name}</td>
+        <td>${doctor.username}</td>
+        <td>${doctor.specialty}</td>
+        <td>
+            <select class="status-select" title="Status for ${doctor.username}" onchange="updateStatus(this, '${doctor.id}')">
+                <option value="approved" ${doctor.status === 'approved' ? 'selected' : ''}>Approved</option>
+                <option value="suspended" ${doctor.status === 'suspended' ? 'selected' : ''}>Suspended</option>
+            </select>
+        </td>
+        <td class="action-buttons">
+            <button class="delete-btn" onclick="deleteUser('${doctor.id}')">Delete</button>
+        </td>
+    `;
+    table.appendChild(row);
+}
+
+
+function deleteDoctor(username) {
+  alert("❌ Delete function not implemented yet.");
+}
+
+        function updateStatus(selectElement, doctorId) {
+            const newStatus = selectElement.value;
+            const doctor = doctors.find(d => d.id === doctorId);
+            if (doctor) {
+                doctor.status = newStatus;
+            } else {
+                showToast('Doctor not found.', 'error');
+            }
+        }
+
+        function deleteUser(doctorId) {
+            if (confirm(`Are you sure you want to delete this doctor?`)) {
+                doctors = doctors.filter(d => d.id !== doctorId);
+                renderAllDoctorsTable(); // Re-render the table
+                updateDashboardOverview(); // Update dashboard counts
+            }
+        }
+
+        // Appointment Management Functions
+        function renderAllAppointmentsTable() {
+            const tableBody = document.querySelector("#allAppointmentsTable tbody");
+            tableBody.innerHTML = '';
+
+            if (appointments.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="no-records">No appointments found.</td></tr>';
+                return;
+            }
+
+            appointments.forEach(app => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${app.id}</td>
+                    <td>${app.patientName}</td>
+                    <td>${app.doctorName}</td>
+                    <td>${app.date}</td>
+                    <td>${app.time}</td>
+                    <td><span class="status ${app.status}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span></td>
+                    <td class="action-buttons">
+                        <button onclick="editAppointment('${app.id}')">Edit</button>
+                        <button class="delete-btn" onclick="cancelAppointment('${app.id}')">Cancel</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function editAppointment(appointmentId) {
+            showToast(`Editing appointment ${appointmentId}. (Functionality to be implemented)`, 'info');
+            // Implement modal or form for editing appointment details
+        }
+
+        function cancelAppointment(appointmentId) {
+            if (confirm(`Are you sure you want to cancel appointment ${appointmentId}?`)) {
+                const appointment = appointments.find(app => app.id === appointmentId);
+                if (appointment) {
+                    appointment.status = 'cancelled'; // Update status
+                    renderAllAppointmentsTable(); // Re-render table
+                    updateDashboardOverview(); // Update dashboard counts
+                  
+                }
+            }
+        }
+
+        // Broadcast Function
+        function sendBroadcast() {
+            const message = document.getElementById("broadcastMessage").value;
+            if (!message.trim()) {
+                showToast("Message cannot be empty.", 'error');
+                return;
+            }
+        }
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateDisplay();
+            updateDashboardOverview();
+            renderUpcomingAppointmentsDashboard();
+            renderUpcomingSessionsDashboard();
+            // Initial section display
+            showSection('dashboardSection', document.querySelector('.sidebar-menu a.active'));
+        });
+
+        
+        function logout() {
+            setTimeout(() => {
+             window.location.href = 'index.html'; 
+            }, 1000);
+        }
+
+        function fetchDoctors() {
+        fetch("php/getDoctors.php") // adjust path if needed
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector("#allDoctorsTable tbody");
+                tbody.innerHTML = "";
+
+                if (data.success && data.doctors.length > 0) {
+                    data.doctors.forEach(doc => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${doc.name}</td>
+                            <td>${doc.username}</td>
+                            <td>${doc.specialty}</td>
+                            <td>${doc.status}</td>
+                            <td>
+                            <button onclick="editDoctor('${doc.id}')">Edit</button>
+                            <button onclick="deleteDoctor('${doc.id}')">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td colspan="5" style="text-align: center;">No doctor accounts found.</td>
+                `;
+                tbody.appendChild(row);
+            }
+        })
+        .catch(err => {
+            console.error("Fetch error:", err);
+        });
+}
+
+function editDoctor(id) {
+    alert("Edit Doctor ID: " + id);
+    // Add edit logic here (e.g., modal)
+}
+
+function deleteDoctor(id) {
+    if (confirm("Are you sure you want to delete this doctor?")) {
+        fetch(`php/deleteDoctor.php?id=${id}`, { method: "DELETE" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) fetchDoctors();
+            else alert("Failed to delete doctor.");
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", fetchDoctors);
+    </script>
+</body>
+</html>

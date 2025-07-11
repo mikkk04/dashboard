@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Patient Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: #f0f2f5; /* Light gray background */
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f7f9fc;
+        }
+
+        .sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: #fff;
+            margin: 0 auto 10px;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info h3 {
+            margin: 5px 0 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .user-info p {
+            margin: 0;
+            color: #777;
+            font-size: 0.85em;
+        }
+
+        .logout-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            width: 100%;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #555;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #e9f5ff;
+            color: #007bff;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #e9f5ff;
+            color: #007bff;
+            border-right: 4px solid #007bff;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background-color: #f7f9fc;
+            overflow-y: auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header-top h2 {
+            font-size: 1.8em;
+            color: #222;
+            margin: 0;
+        }
+
+        .date-display {
+            font-size: 1em;
+            color: #777;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .date-display i {
+            color: #007bff;
+        }
+
+        .welcome-banner {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            background: linear-gradient(45deg, #007bff, #00d4ff);
+            opacity: 0.1;
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .welcome-text {
+            z-index: 1;
+        }
+
+        .welcome-text h3 {
+            margin: 0 0 10px;
+            font-size: 1.6em;
+            color: #007bff;
+        }
+
+        .welcome-text p {
+            margin: 0;
+            color: #555;
+            line-height: 1.6;
+            max-width: 70%;
+        }
+
+        .banner-image {
+            width: 150px;
+            height: 100px;
+            object-fit: contain;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        .dashboard-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .overview-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .overview-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .overview-card:nth-child(1) .overview-icon {
+            background-color: #007bff;
+        }
+
+        .overview-card:nth-child(2) .overview-icon {
+            background-color: #28a745;
+        }
+
+        .overview-card:nth-child(3) .overview-icon {
+            background-color: #ffc107;
+        }
+
+        .overview-card:nth-child(4) .overview-icon {
+            background-color: #dc3545;
+        }
+
+        .overview-info h4 {
+            margin: 0 0 5px;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .overview-info p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .upcoming-appointments,
+        .past-sessions {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .upcoming-appointments h3,
+        .past-sessions h3,
+        .section-title {
+            font-size: 1.5em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #007bff;
+        }
+
+        .appointment-table,
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .appointment-table th,
+        .sessions-table th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            color: #555;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .appointment-table td,
+        .sessions-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+        }
+
+        .appointment-table tr:last-child td,
+        .sessions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .appointment-table tbody tr:hover,
+        .sessions-table tbody tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        .no-records {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        /* Existing styles for appointment booking from previous update */
+        .appointment-panel {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            flex-grow: 1;
+            /* Allows panel to expand */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .appointment-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* Default to single column */
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .appointment-grid {
+                grid-template-columns: 1fr 1fr;
+                /* Two columns on larger screens */
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group .icon {
+            margin-right: 8px;
+            color: #007bff;
+        }
+
+        .custom-calendar {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            /* Ensures padding doesn't increase width */
+        }
+
+        #availableSlots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            /* More compact slots */
+            gap: 10px;
+            padding: 10px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            min-height: 100px;
+            /* Give some space even if empty */
+            align-content: start;
+            /* Align content to the top */
+        }
+
+        .slot {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #aaddff;
+            /* Lighter border for available */
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .slot:hover {
+            background-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .slot.selected {
+            background-color: #0056b3;
+            color: white;
+            border-color: #0056b3;
+        }
+
+        .slot.full {
+            background-color: #e0e0e0;
+            color: #777;
+            border-color: #ccc;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            box-sizing: border-box;
+            min-height: 100px;
+            /* Ensure a decent size */
+        }
+
+        .btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .profile-img-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+            background-color: #ecf0f1;
+            margin-bottom: 10px;
+        }
+
+        /* Messages Section specific styles */
+        #messagesSection {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            min-height: 500px;
+        }
+
+        .doctor-list-panel {
+            flex: 1;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            min-width: 200px;
+        }
+
+        .doctor-list-panel h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .doctor-list-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .doctor-list-panel li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            color: #34495e;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .doctor-list-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .doctor-list-panel li:hover,
+        .doctor-list-panel li.active-doctor {
+            background-color: #e0f2f7;
+            padding-left: 10px;
+            border-radius: 5px;
+        }
+
+        .chat-panel {
+            flex: 3;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .message-display {
+            flex: 1;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background-color: #fcfcfc;
+            display: flex;
+            /* Make it a flex container */
+            flex-direction: column;
+            /* Stack messages vertically */
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 70%;
+            word-wrap: break-word;
+            /* Ensure long words wrap */
+        }
+
+        .message.sent {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message.received {
+            background-color: #ecf0f1;
+            color: #333;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+
+        .message-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+
+        .message-input-area button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Medical Records Section specific styles */
+        #medicalRecordsSection {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .record-entry {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #007bff;
+        }
+
+        .record-entry h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .record-entry p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .record-entry p strong {
+            color: #333;
+        }
+
+        /* Settings Section specific styles */
+        #settingsSection .settings-panel {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #settingsSection .settings-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        #settingsSection .form-group input[type="text"],
+        #settingsSection .form-group input[type="email"],
+        #settingsSection .form-group input[type="password"],
+        #settingsSection .form-group select {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        #settingsSection .form-group label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        #settingsSection .btn {
+            margin-top: 20px;
+        }
+
+        /* New styles for doctor sessions and booking modal */
+        .doctor-card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            border: 2px solid transparent; /* Default transparent border */
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-card.selected {
+            border-color: #007bff; /* Highlight selected doctor */
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+        }
+
+        .doctor-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+        }
+
+        .doctor-info h4 {
+            margin: 0 0 5px;
+            color: #222;
+            font-size: 1.3em;
+        }
+
+        .doctor-info p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .doctor-info .specialty {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .doctor-info .sessions-count {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 700px;
+            position: relative;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        @keyframes animatetop {
+            from {top: -300px; opacity: 0}
+            to {top: 0; opacity: 1}
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding-top: 20px;
+        }
+
+        .session-time-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .session-time-input input {
+            flex: 1;
+        }
+
+        .session-item {
+            background-color: #f0f8ff;
+            border: 1px solid #aaddff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-item.pending {
+            border-left: 5px solid #ffc107;
+        }
+        .session-item.accepted {
+            border-left: 5px solid #28a745;
+        }
+        .session-item.rejected {
+            border-left: 5px solid #dc3545;
+        }
+        .session-item.completed {
+            border-left: 5px solid #6c757d;
+        }
+
+        .session-item span {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .session-item .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+
+        .session-item .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .session-item .status.accepted {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .session-item .status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .session-item .status.completed {
+            background-color: #e2e3e5;
+            color: #495057;
+        }
+
+        /* General responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            #messagesSection {
+                flex-direction: column;
+            }
+
+            .doctor-list-panel,
+            .chat-panel {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .appointment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Specialty Dropdown Styling */
+        .styled-select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            width: 100%; /* Make it full width */
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .styled-select:focus {
+            border-color: #007bff;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+
+        /* Enhanced Doctor Grid */
+        .enhanced-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Booking Details Card */
+        .booking-details-card {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f7f9fc;
+            border: 1px solid #dde4f0;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .booking-details-card h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .booking-details-card p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .camera{
+            height: 800px;
+            width: 1280px;
+            
+        }
+
+        html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.dashboard-container {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main-content {
+    overflow: hidden;
+}
+
+    </style>
+    
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">
+                    <img id="sidebarProfilePicture" src="" alt="Patient Avatar">
+                </div>
+                <div class="user-info">
+                    <h3 id="sidebarPatientName"></h3>
+                    <p id="sidebarPatientEmail"></p>
+                </div>
+                <button class="logout-btn" onclick="logout()">Log out</button>
+            </div>
+
+            <nav class="sidebar-menu">
+                <ul id="mainMenu">
+                    <li><a href="#" onclick="showSection('dashboardSection', this)" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                    <li><a href="#" onclick="showSection('allDoctorsSection', this)"><i class="fas fa-user-md"></i> All Doctors</a></li>
+                    <li><a href="#" onclick="showSection('MyAppointment', this)"><i class="fas fa-calendar-alt"></i> Book Appointment</a></li>
+                    <li><a href="#" onclick="showSection('myBookingsSection', this)"><i class="fas fa-book-medical"></i> My Bookings</a></li>
+                    <li><a href="#" onclick="showSection('scheduledSessionsSection', this)"><i class="fas fa-history"></i> Past Sessions</a></li>
+                    <li><a href="#" onclick="showSection('videocallSection', this)"><i class="fas fa-video"></i> Teleconsultation</a></li>
+                    </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="dashboardSection">
+            <div class="header-top">
+                <h2>Dashboard</h2>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="todayDate"></span>
+                </div>
+            </div>
+
+            <h3 class="section-title"><i class="fas fa-chart-bar"></i> Status Overview</h3>
+            <div class="dashboard-overview">
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-user-md"></i></div>
+                    <div class="overview-info">
+                        <h4><span id="totalDoctors">0</span></h4>
+                        <p>All Doctors</p>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="overview-info">
+                        <h4><span id="todaySessions">0</span></h4>
+                        <p>Today's Sessions</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="upcoming-appointments">
+                <h3 class="section-title"><i class="fas fa-clock"></i> Your Upcoming Bookings</h3>
+                <table class="appointment-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment Number</th>
+                            <th>Session Title</th>
+                            <th>Doctor</th>
+                            <th>Scheduled Date & Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="upcomingBookingsTableBody">
+                        <tr>
+                            <td colspan="5" class="no-records">No upcoming bookings.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <main class="main-content" id="allDoctorsSection" style="display: none;">
+            <div class="header-top">
+                <h2>All Doctors</h2>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="todayDateAllDoctors"></span>
+                </div>
+            </div>
+            <div id="doctorList" class="enhanced-grid">
+                </div>
+        </main>
+
+        
+        <main class="main-content" id="scheduledSessionsSection" style="display: none;">
+            <div class="header-top">
+                <h2>Past Sessions</h2>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="todayDateScheduledSessions"></span>
+                </div>
+            </div>
+            <div class="past-sessions">
+                <h3 class="section-title"><i class="fas fa-history"></i> Your Past Sessions</h3>
+                <table class="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pastSessionsTableBody">
+                        <tr>
+                            <td colspan="6" class="no-records">No past sessions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+
+        <main class="main-content" id="myBookingsSection" style="display: none;">
+            <div class="header-top">
+                <h2>My Bookings</h2>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="todayDateMyBookings"></span>
+                </div>
+            </div>
+            <div class="upcoming-appointments">
+                <h3 class="section-title"><i class="fas fa-book-medical"></i> My Booked Appointments</h3>
+                <table class="appointment-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Session Title</th>
+                            <th>Doctor</th>
+                            <th>Scheduled Date & Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myBookingsTableBody">
+                        <tr>
+                            <td colspan="6" class="no-records">You have no booked appointments.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+
+        <main class="main-content" id="MyAppointment" style="display: none;">
+            <div class="header-top">
+                <h2>Book Appointment</h2>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="todayDateMyAppointment"></span>
+                </div>
+            </div>
+
+            <div class="appointment-panel">
+                <h3 class="section-title"><i class="fas fa-calendar-day"></i> Choose a Doctor</h3>
+
+                <div class="form-group">
+                    <label for="doctorSpecialtyFilter">Select Doctor Specialty:</label>
+                    <select id="doctorSpecialtyFilter" class="styled-select" onchange="filterDoctorsBySpecialty()">
+                        <option value="">All Specialties</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Endocrinologist">Endocrinologist</option>
+                        <option value="Gastroenterologist">Gastroenterologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Anesthesiologist">Anesthesiologist</option>
+                        <option value="Family medicine">Family medicine</option>
+                        <option value="Obstetrics and gynaecology">Obstetrics and gynaecology</option>
+                        <option value="Oncologist">Oncologist</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Emergency medicine">Emergency medicine</option>
+                        <option value="Allergist">Allergist</option>
+                        <option value="General Surgery">General Surgery</option>
+                        <option value="Immunology">Immunology</option>
+                        <option value="Ophthalmologist">Ophthalmologist</option>
+                        <option value="Orthopaedist">Orthopaedist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Colorectal surgery">Colorectal surgery</option>
+                        <option value="Geriatrics">Geriatrics</option>
+                        <option value="Hematologist">Hematologist</option>
+                        <option value="Infectious disease physician">Infectious disease physician</option>
+                        <option value="Nephrologist">Nephrologist</option>
+                        <option value="Otorhinolaryngologist">Otorhinolaryngologist</option>
+                        <option value="Hospice and palliative medicine">Hospice and palliative medicine</option>
+                    </select>
+                </div>
+
+                <div id="filteredDoctorsContainer" class="enhanced-grid">
+                    </div>
+
+                <div id="bookingDetailsPanel" class="booking-details-card" style="display: none;">
+                    <h4 class="section-title"><i class="fas fa-info-circle"></i> Selected Appointment Details</h4>
+                    <p><strong>Selected Doctor:</strong> <span id="selectedDoctorName">None</span></p>
+                    <p><strong>Specialty:</strong> <span id="selectedDoctorSpecialty">None</span></p>
+
+                    <div class="form-group">
+                        <label for="appointmentDate"><span class="icon"><i class="far fa-calendar-alt"></i></span> Select Date:</label>
+                        <input type="text" id="appointmentDate" class="custom-calendar" placeholder="Select a date" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label><span class="icon"><i class="far fa-clock"></i></span> Available Time Slots:</label>
+                        <div id="availableSlots">
+                            <p class="no-records">Please select a doctor and date to see available slots.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientProblem"><span class="icon"><i class="fas fa-notes-medical"></i></span> Describe Your Problem:</label>
+                        <textarea id="patientProblem" placeholder="Briefly describe your reason for appointment..."></textarea>
+                    </div>
+
+                    <button class="btn" onclick="bookAppointment()">Book Appointment</button>
+                </div>
+            </div>
+        </main>
+
+        <main class="main-content" id="videocallSection" style="display: none; padding: 0; margin: 0;">
+    <div>
+    </div>
+    <div class="date-display">
+       <iframe
+  class="camera"src="https://f27c8f626a1b.ngrok-free.app"
+  frameborder="0"
+  allow="camera; microphone; autoplay"></iframe>
+
+    </div>
+
+</main>
+
+
+    </div> <script>
+        let allDoctors = [];
+        let selectedDoctor = null;
+        let selectedDate = null;
+        let selectedTimeSlot = null;
+        let flatpickrInstance = null; // To store the Flatpickr instance
+
+        //Function to show toast messages
+        function showToast(message, type = 'success') {
+            let toast = document.createElement('div');
+            toast.classList.add('toast');
+            toast.textContent = message;
+
+            if (type === 'error') {
+                toast.style.backgroundColor = '#e74c3c';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#f39c12';
+            } else if (type === 'info') {
+                toast.style.backgroundColor = '#3498db';
+            } else {
+                toast.style.backgroundColor = '#2ecc71';
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Function to display current date
+        function updateDateDisplay() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = today.toLocaleDateString(undefined, options);
+            document.getElementById('todayDate').textContent = formattedDate;
+            if (document.getElementById('todayDateAllDoctors')) document.getElementById('todayDateAllDoctors').textContent = formattedDate;
+            if (document.getElementById('todayDateScheduledSessions')) document.getElementById('todayDateScheduledSessions').textContent = formattedDate;
+            if (document.getElementById('todayDateMyBookings')) document.getElementById('todayDateMyBookings').textContent = formattedDate;
+            if (document.getElementById('todayDateMyAppointment')) document.getElementById('todayDateMyAppointment').textContent = formattedDate;
+        }
+
+        // Function to show/hide sections
+        function showSection(sectionId, element) {
+            document.querySelectorAll('main.main-content').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active class in sidebar menu
+            document.querySelectorAll('.sidebar-menu a').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+
+            // Special handling for Book Appointment section to ensure doctors are displayed
+            if (sectionId === 'MyAppointment') {
+                displayDoctors(allDoctors); // Show all doctors initially for booking
+                document.getElementById('bookingDetailsPanel').style.display = 'none'; // Hide details panel initially
+                document.getElementById('selectedDoctorName').textContent = 'None';
+                document.getElementById('selectedDoctorSpecialty').textContent = 'None';
+                selectedDoctor = null;
+                selectedDate = null;
+                selectedTimeSlot = null;
+                if (flatpickrInstance) {
+                    flatpickrInstance.clear();
+                    flatpickrInstance.destroy(); // Destroy to reinitialize cleanly if needed
+                    flatpickrInstance = null;
+                }
+                document.getElementById('availableSlots').innerHTML = '<p class="no-records">Please select a doctor and date to see available slots.</p>';
+                document.getElementById('patientProblem').value = '';
+                
+                // Remove 'selected' class from all doctor cards
+                document.querySelectorAll('.doctor-card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                });
+            }
+            // For All Doctors section, display them as well
+            if (sectionId === 'allDoctorsSection') {
+                displayDoctors(allDoctors, true); // True to indicate displaying in 'All Doctors' section
+            }
+        }
+
+        // --- Doctor and Appointment Booking Logic ---
+
+        // Function to render doctor cards
+        function displayDoctors(doctors, isAllDoctorsSection = false) {
+            const container = isAllDoctorsSection ? document.getElementById('doctorList') : document.getElementById('filteredDoctorsContainer');
+            if (!container) return; // Ensure container exists
+
+            container.innerHTML = ''; // Clear previous doctors
+
+            if (!doctors || doctors.length === 0) {
+                container.innerHTML = '<p class="no-records">No doctors found.</p>';
+                return;
+            }
+
+            doctors.forEach(doctor => {
+                const doctorCard = document.createElement('div');
+                doctorCard.classList.add('doctor-card');
+                doctorCard.setAttribute('data-doctor-id', doctor.id);
+                doctorCard.innerHTML = `
+                    <img src="${doctor.profilePic || 'https://via.placeholder.com/80?text=Dr'}" alt="${doctor.name}">
+                    <div class="doctor-info">
+                        <h4>Dr. ${doctor.name}</h4>
+                        <p class="specialty">${doctor.specialty}</p>
+                        <p>Available Sessions: <span class="sessions-count">${doctor.availableSessions || 0}</span></p>
+                    </div>
+                `;
+                doctorCard.onclick = () => selectDoctorForAppointment(doctor, doctorCard);
+                container.appendChild(doctorCard);
+
+                // If a doctor was previously selected in the Book Appointment section, keep it highlighted
+                if (!isAllDoctorsSection && selectedDoctor && selectedDoctor.id === doctor.id) {
+                    doctorCard.classList.add('selected');
+                }
+            });
+        }
+
+        // Function to filter doctors by specialty
+        function filterDoctorsBySpecialty() {
+            const specialty = document.getElementById('doctorSpecialtyFilter').value;
+            let filtered = [];
+            if (specialty === '') {
+                filtered = allDoctors; // Show all if "All Specialties" is selected
+            } else {
+                filtered = allDoctors.filter(doctor => doctor.specialty === specialty);
+            }
+            displayDoctors(filtered);
+            // Reset selections when filter changes
+            selectedDoctor = null;
+            selectedDate = null;
+            selectedTimeSlot = null;
+            document.getElementById('bookingDetailsPanel').style.display = 'none';
+            document.getElementById('selectedDoctorName').textContent = 'None';
+            document.getElementById('selectedDoctorSpecialty').textContent = 'None';
+            if (flatpickrInstance) {
+                flatpickrInstance.clear();
+                flatpickrInstance.destroy();
+                flatpickrInstance = null; // Reset Flatpickr
+            }
+            document.getElementById('availableSlots').innerHTML = '<p class="no-records">Please select a doctor and date to see available slots.</p>';
+            document.getElementById('patientProblem').value = '';
+
+            // Remove 'selected' class from all doctor cards
+            document.querySelectorAll('.doctor-card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        // Function to handle doctor selection for booking
+        function selectDoctorForAppointment(doctor, clickedCard) {
+            // Check if the current section is 'MyAppointment'
+            const isMyAppointmentSection = document.getElementById('MyAppointment').style.display === 'block';
+
+            if (!isMyAppointmentSection) {
+                // If not in booking section, just show toast or do nothing
+                showToast(`Viewing Dr. ${doctor.name}'s profile. Navigate to 'Book Appointment' to book.`, 'info');
+                return;
+            }
+
+            if (selectedDoctor && selectedDoctor.id === doctor.id) {
+                // If the same doctor is clicked again, deselect
+                selectedDoctor = null;
+                selectedDate = null;
+                selectedTimeSlot = null;
+                document.getElementById('bookingDetailsPanel').style.display = 'none';
+                document.getElementById('selectedDoctorName').textContent = 'None';
+                document.getElementById('selectedDoctorSpecialty').textContent = 'None';
+                clickedCard.classList.remove('selected');
+                if (flatpickrInstance) {
+                    flatpickrInstance.clear();
+                    flatpickrInstance.destroy();
+                    flatpickrInstance = null;
+                }
+                document.getElementById('availableSlots').innerHTML = '<p class="no-records">Please select a doctor and date to see available slots.</p>';
+                document.getElementById('patientProblem').value = '';
+                return;
+            }
+
+            // Deselect any previously selected doctor card
+            document.querySelectorAll('#filteredDoctorsContainer .doctor-card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            selectedDoctor = doctor;
+            clickedCard.classList.add('selected'); // Highlight the selected doctor
+
+            document.getElementById('selectedDoctorName').textContent = doctor.name;
+            document.getElementById('selectedDoctorSpecialty').textContent = doctor.specialty;
+            document.getElementById('bookingDetailsPanel').style.display = 'block'; // Show the booking panel
+
+            // Scroll to the booking details panel
+            document.getElementById('bookingDetailsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Initialize Flatpickr for date selection for the selected doctor
+            if (flatpickrInstance) {
+                flatpickrInstance.destroy(); // Destroy previous instance if it exists
+            }
+            flatpickrInstance = flatpickr("#appointmentDate", {
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                inline: false, // Make it a dropdown calendar
+                onChange: function(selectedDates, dateStr, instance) {
+                    selectedDate = dateStr;
+                    selectedTimeSlot = null; // Reset time slot when date changes
+                    // Remove 'selected' class from all time slots
+                    document.querySelectorAll('#availableSlots .slot.selected').forEach(s => {
+                        s.classList.remove('selected');
+                    });
+
+                    document.getElementById('availableSlots').innerHTML = ''; // Clear previous slots
+                    if (selectedDate && selectedDoctor) {
+                        showToast('Fetching available slots...', 'info');
+                    } else {
+                        document.getElementById('availableSlots').innerHTML = '<p class="no-records">Please select a doctor and date to see available slots.</p>';
+                    }
+                }
+            });
+
+            // Clear and reset slots and problem description
+            document.getElementById('availableSlots').innerHTML = '<p class="no-records">Please select a date to see available slots.</p>';
+            document.getElementById('patientProblem').value = '';
+        }
+
+        // Render available time slots
+        function renderSlots(slots) {
+            const slotsContainer = document.getElementById('availableSlots');
+            slotsContainer.innerHTML = ''; // Clear previous slots
+
+            if (!slots || slots.length === 0) {
+                slotsContainer.innerHTML = '<p class="no-records">No available slots for this date.</p>';
+                return;
+            }
+
+            slots.forEach(slot => {
+                const slotElement = document.createElement('div');
+                slotElement.classList.add('slot');
+                if (slot.isBooked) { // Assuming 'isBooked' property for occupied slots
+                    slotElement.classList.add('full');
+                    slotElement.textContent = `${slot.time} (Booked)`;
+                    slotElement.style.cursor = 'not-allowed';
+                } else {
+                    slotElement.textContent = slot.time;
+                    slotElement.onclick = () => selectTimeSlot(slotElement, slot.time);
+                }
+                slotsContainer.appendChild(slotElement);
+            });
+        }
+
+        // Function to select a time slot
+        function selectTimeSlot(slotElement, time) {
+            if (slotElement.classList.contains('full')) {
+                showToast('This slot is already booked.', 'error');
+                return;
+            }
+            // Deselect any previously selected slot
+            document.querySelectorAll('#availableSlots .slot.selected').forEach(s => {
+                s.classList.remove('selected');
+            });
+            slotElement.classList.add('selected');
+            selectedTimeSlot = time;
+        }
+
+        // Function to book the appointment
+        function bookAppointment() {
+            const patientProblem = document.getElementById('patientProblem').value.trim();
+
+            if (!selectedDoctor) {
+                showToast('Please select a doctor.', 'error');
+                return;
+            }
+            if (!selectedDate) {
+                showToast('Please select an appointment date.', 'error');
+                return;
+            }
+            if (!selectedTimeSlot) {
+                showToast('Please select an available time slot.', 'error');
+                return;
+            }
+            if (!patientProblem) {
+                showToast('Please describe your problem.', 'error');
+                return;
+            }
+
+            // Retrieve current user from localStorage (assuming patient data is stored here)
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const patientId = currentUser ? currentUser.id || 'guest' : 'guest'; // Assuming 'id' or default 'guest'
+            const patientName = currentUser ? currentUser.username || 'Guest Patient' : 'Guest Patient';
+
+            const bookingDetails = {
+                doctorId: selectedDoctor.id,
+                doctorName: selectedDoctor.name,
+                patientId: patientId,
+                patientName: patientName,
+                date: selectedDate,
+                time: selectedTimeSlot,
+                problem: patientProblem,
+                status: 'Pending' // Initial status
+            };
+        }
+
+
+
+        // --- Initial Data Loading and Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateDisplay();
+
+            // Initial setup for the patient sidebar
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser && currentUser.username) {
+                document.getElementById('sidebarPatientName').textContent = currentUser.username;
+                document.getElementById('sidebarPatientEmail').textContent = currentUser.email || 'patient@example.com'; // Assuming email might be stored
+                if (currentUser.profilePic) {
+                    document.getElementById('sidebarProfilePicture').src = currentUser.profilePic;
+                } else {
+                    document.getElementById('sidebarProfilePicture').src = 'https://via.placeholder.com/80?text=P'; // Default image if none
+                }
+            } else {
+                document.getElementById('sidebarPatientName').textContent = 'Guest Patient';
+                document.getElementById('sidebarPatientEmail').textContent = 'N/A';
+                document.getElementById('sidebarProfilePicture').src = 'https://via.placeholder.com/80?text=P';
+            }
+
+            // Set initial section display (dashboard)
+            showSection('dashboardSection', document.querySelector('.sidebar-menu a.active'));
+
+            renderUpcomingBookings();
+            renderPastSessions();
+            
+        });
+
+
+        // Placeholder function to render upcoming bookings
+        // This function would typically fetch actual upcoming bookings for the logged-in patient
+        function renderUpcomingBookings() {
+           
+        }
+
+        // Placeholder function to render past sessions
+        // This function would typically fetch actual past sessions for the logged-in patient
+        function renderPastSessions() {
+           
+        }
+
+        // Basic logout function
+        function logout() {
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        
+    </script>
+
+    
+
+</body>
+</html>

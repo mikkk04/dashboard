@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Video Call System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent: #3498db;
+      --light-gray: #f4f4f4;
+      --white: #ffffff;
+      --error: #e74c3c;
+      --font-main: 'Segoe UI', 'Arial', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-main);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url("images/bg3.login.jpg") no-repeat center center/cover;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4); /* semi-transparent dark overlay */
+      z-index: 0;
+      pointer-events: none; /* 👈 allows clicking through overlay */
+    }
+
+    .login-container {
+      background-color: #ffffff;
+      color: #2c3e50;
+      padding: 40px 30px;
+      border-radius: 12px;
+      width: 340px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* stronger shadow */
+      position: relative;
+      z-index: 2;
+    }
+
+    .login-container h2 {
+      margin: 0 0 20px;
+      text-align: center;
+      color: var(--primary);
+      font-size: 24px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 5px var(--accent);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .forgot-password {
+      display: block;
+      text-align: right;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .forgot-password a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        width: 90%;
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <input type="password" id="password" placeholder="Enter password" />
+
+    <label for="role">Role</label>
+    <select id="role">
+      <option value="doctor">Doctor</option>
+      <option value="patient">Patient</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <button onclick="login()">Login</button>
+
+    <div class="forgot-password">
+      <a href="#">Forgot Password?</a>
+    </div>
+
+    <div id="errorMsg" class="error-message hidden"></div>
+  </div>
+
+ </style>
+</head>
+<body>
+
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorMsg = document.getElementById("errorMsg");
+
+      if (!username || !password) {
+        errorMsg.innerText = "Please fill in all fields.";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('currentUser', JSON.stringify(result.user));
+          const role = result.user.role;
+          if (role === "admin") {
+            window.location.href = "Admin.html";
+          } else if (role === "doctor") {
+            window.location.href = "Doctor Dashboard.html";
+          } else if (role === "patient") {
+            window.location.href = "Patient Dashboard.html";
+          }
+        } else {
+          errorMsg.innerText = result.message;
+          errorMsg.style.display = "block";
+        }
+      } catch (err) {
+        errorMsg.innerText = "Server error.";
+        errorMsg.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html> 
